@@ -18,6 +18,42 @@ let sex = 'male';
 let selectedFood = foods[0];
 let lastFoodResult = null;
 
+const MICRO_ORDER = ['vitA','vitD','vitE','vitK','b1','b2','b3','b5','b6','folat','b12','biotin','vitC','ca','p','mag','kalium','fe','iodium','zn','se'];
+const AKG_AGE_LABELS = ['16–18','19–29','30–49','50–64','65–80','80+'];
+const AKG_MALE = [
+  [600,15,15,55,1.3,1.6,15,5,1.3,400,2.4,30,90,1200,1200,250,4700,15,150,17,30],
+  [600,15,15,65,1.4,1.6,15,5,1.3,400,2.4,30,90,1100,700,350,4700,13,150,13,30],
+  [600,15,15,65,1.3,1.6,15,5,1.3,400,2.4,30,90,1000,700,350,4700,13,150,13,30],
+  [600,15,15,65,1.2,1.4,13,5,1.7,400,2.4,30,90,1000,700,350,4700,13,150,13,30],
+  [600,20,15,65,1.0,1.1,10,5,1.7,400,2.4,30,90,1000,700,350,4700,13,150,13,30],
+  [600,20,15,65,0.8,0.9,8,5,1.7,400,2.4,30,90,1000,700,350,4700,13,150,13,30]
+];
+const AKG_FEMALE = [
+  [600,15,15,55,1.1,1.3,12,5,1.2,400,2.4,30,75,1200,1200,220,4700,26,150,14,30],
+  [500,15,15,55,1.1,1.4,12,5,1.3,400,2.4,30,75,1100,700,310,4700,26,150,10,30],
+  [500,15,15,55,1.1,1.3,12,5,1.3,400,2.4,30,75,1000,700,320,4700,26,150,10,30],
+  [500,15,15,55,1.0,1.1,10,5,1.5,400,2.4,30,75,1000,700,320,4700,12,150,10,30],
+  [500,20,15,55,0.8,0.9,9,5,1.5,400,2.4,30,75,1000,700,320,4700,12,150,10,30],
+  [500,20,15,55,0.7,0.9,8,5,1.5,400,2.4,30,75,1000,700,320,4700,12,150,10,30]
+];
+
+const MICRO_LAYOUT = [
+  {title:'Vitamin',rows:[['vitA','Vitamin A','µg',0],['vitC','Vitamin C','mg',0],['vitD','Vitamin D','µg',0],['vitE','Vitamin E','mg',0],['vitK','Vitamin K','µg',0]]},
+  {title:'Vitamin B kompleks',rows:[['b1','Vitamin B1 (tiamin)','mg',1],['b2','Vitamin B2 (riboflavin)','mg',1],['b3','Vitamin B3 (niasin)','mg',0],['b5','Vitamin B5 (pantotenat)','mg',1],['b6','Vitamin B6','mg',1],['folat','Folat','µg',0],['b12','Vitamin B12','µg',1],['biotin','Biotin','µg',0]]},
+  {title:'Mineral',rows:[['ca','Kalsium','mg',0],['mag','Magnesium','mg',0],['fe','Zat besi','mg',0],['zn','Seng','mg',0],['kalium','Kalium','mg',0],['iodium','Iodium','µg',0],['p','Fosfor','mg',0],['se','Selenium','µg',0]]}
+];
+function akgAgeIndex(age) { return age<=18?0 : age<=29?1 : age<=49?2 : age<=64?3 : age<=80?4 : 5; }
+function renderMicros(p) {
+  const g = akgAgeIndex(p.age);
+  const base = (p.sex === 'male' ? AKG_MALE : AKG_FEMALE)[g];
+  const v = {};
+  MICRO_ORDER.forEach((key,i)=>{ v[key] = base[i]; });
+  $('microSubtitle').textContent = `AKG ${p.sex==='male'?'pria':'wanita'} usia ${AKG_AGE_LABELS[g]} tahun`;
+  $('microList').innerHTML = MICRO_LAYOUT.map(group=>`<div class="micro-group"><h4>${group.title}</h4>${group.rows.map(r=>`<div class="micro-row"><span>${r[1]}</span><b>${fmt(v[r[0]],r[3])} <small>${r[2]}</small></b></div>`).join('')}</div>`).join('');
+  $('microList').scrollTop = 0;
+}
+
+
 function calculateProfile(p) {
   const h = p.height / 100;
   const bmi = p.weight / (h*h);
@@ -46,6 +82,7 @@ $('profileForm').addEventListener('submit',event=>{
   if (!Number.isFinite(p.weight)||p.weight<25||p.weight>300) return showError('Masukkan berat badan antara 25–300 kg.');
   if (['pregnant','breastfeeding'].includes(p.condition)) return showError('Perhitungan energi standar ini tidak berlaku untuk kehamilan atau menyusui.');
   const r = calculateProfile(p);
+  renderMicros(p);
   setMetric('bmiValue',fmt(r.bmi,1),'kg/m²'); $('bmiCategory').textContent=r.category;
   setMetric('idealValue',`${fmt(r.idealMin,1)}–${fmt(r.idealMax,1)}`,'kg');
   setMetric('bmrValue',fmt(r.bmr),'kkal/hari'); setMetric('tdeeValue',fmt(r.tdee),'kkal/hari');
