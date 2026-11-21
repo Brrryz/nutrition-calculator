@@ -3,7 +3,7 @@
 Website statis tanpa framework/runtime dependency. Seluruh kalkulasi berjalan di browser. Bisa di-deploy langsung ke Vercel tanpa build command, package install, backend, API key, atau environment variable.
 
 ## Fitur yang sudah diimplementasikan
-- **Personal Nutrition Calculator:** input jenis kelamin, usia, tinggi, berat, aktivitas fisik, kondisi tubuh, dan tujuan berat badan; hasil BMI/kategori, rentang berat badan ideal, BMR, TDEE, target kalori, makronutrien, dan rekomendasi pangan berbasis aturan.
+- **Personal Nutrition Calculator:** input jenis kelamin, usia, tinggi, berat, aktivitas fisik, dan tujuan berat badan; hasil BMI/kategori, rentang berat badan ideal, BMR, TDEE, target kalori, makronutrien, dan rekomendasi pangan berbasis aturan.
 - **Food Nutrition Calculator:** pencarian makanan, pemilihan item, input gram, scaling nutrisi per 100 gram, ringkasan makro, dan tabel energi, protein, lemak, karbohidrat, serat, natrium, kalsium, zat besi, vitamin A dan C.
 - Responsive desktop/mobile, validasi input, empty state, search suggestions, navigasi dua halaman, disclosure rumus.
 - Tidak ada login atau penyimpanan data pribadi. Tidak ada data yang dikirim ke server.

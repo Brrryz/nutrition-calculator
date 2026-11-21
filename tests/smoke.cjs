@@ -6,10 +6,10 @@ class Element {
   constructor() { this.value=''; this.textContent=''; this.innerHTML=''; this.hidden=false; this.dataset={}; this.handlers={}; this.classList={add(){},remove(){},toggle(){}}; }
   addEventListener(type,fn) { this.handlers[type]=fn; }
 }
-const ids=['profileForm','profileError','age','height','weight','activity','condition','goal','bmiValue','bmiCategory','idealValue','bmrValue','tdeeValue','calorieValue','calorieDescription','calorieRingValue','carbValue','proteinValue','fatValue','resultStatus','recommendations','foodSearch','foodSuggestions','searchResults','selectedFoodName','selectedFoodMeta','foodGrams','foodForm','portionLabel','foodOutput','navLinks','heroTitle','heroDescription','personalPage','foodPage','formulaNotice','closeNotice','helpButton','mobileToggle','brandHome','clearFood'];
+const ids=['profileForm','profileError','age','height','weight','activity','goal','bmiValue','bmiCategory','idealValue','bmrValue','tdeeValue','calorieValue','calorieDescription','calorieRingValue','carbValue','proteinValue','fatValue','resultStatus','recommendations','foodSearch','foodSuggestions','searchResults','selectedFoodName','selectedFoodMeta','foodGrams','foodForm','portionLabel','foodOutput','navLinks','heroTitle','heroDescription','personalPage','foodPage','formulaNotice','closeNotice','helpButton','mobileToggle','brandHome','clearFood'];
 const elements=Object.fromEntries(ids.map(id=>[id,new Element()]));
 Object.assign(elements.age,{value:'22'}); Object.assign(elements.height,{value:'170'}); Object.assign(elements.weight,{value:'65'});
-Object.assign(elements.activity,{value:'1.375'}); Object.assign(elements.condition,{value:'none'}); Object.assign(elements.goal,{value:'maintain'}); Object.assign(elements.foodGrams,{value:'150'});
+Object.assign(elements.activity,{value:'1.375'}); Object.assign(elements.goal,{value:'maintain'}); Object.assign(elements.foodGrams,{value:'150'});
 const sexButtons=['male','female'].map(sex=>{const e=new Element();e.dataset.sex=sex;return e;});
 const pageButtons=['personal','food'].map(page=>{const e=new Element();e.dataset.page=page;return e;});
 const document={getElementById:id=>elements[id]||new Element(),querySelectorAll:selector=>selector==='[data-sex]'?sexButtons:selector==='[data-page]'?pageButtons:[]};
@@ -29,9 +29,9 @@ pageButtons[1].handlers.click();
 assert.equal(elements.foodPage.hidden,false,'Food page should become visible after navigation');
 assert.equal(elements.personalPage.hidden,true,'Personal page should hide after navigation');
 
-// Guardrails: pregnancy is not processed with the generic adult energy equation.
-elements.condition.value='pregnant';
+// Guardrails: under 18 years old is not processed.
+elements.age.value='16';
 elements.profileForm.handlers.submit({preventDefault(){}});
-assert.equal(elements.profileError.hidden,false,'Pregnancy should trigger an explicit guardrail');
-assert.match(elements.profileError.textContent,/kehamilan/);
+assert.equal(elements.profileError.hidden,false,'Age under 18 should trigger an explicit guardrail');
+assert.match(elements.profileError.textContent,/usia 18–100 tahun/);
 console.log('PASS: profile formulas, BMI, BMR, recommendations, food portion scaling, navigation, and safety guardrails.');

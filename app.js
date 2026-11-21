@@ -63,24 +63,22 @@ function calculateProfile(p) {
   const target = Math.max(1200,tdee + (p.goal === 'lose' ? -300 : p.goal === 'gain' ? 300 : 0));
   return {bmi,category,idealMin:18*h*h,idealMax:24.9*h*h,bmr,tdee,target,carbs:target*.5/4,protein:target*.2/4,fat:target*.3/9};
 }
-function recommendations(category,goal,condition) {
+function recommendations(category,goal) {
   let items = category === 'Berat badan kurang'
     ? ['Tambahkan sumber energi dan protein pada waktu makan utama.','Pilih camilan padat gizi seperti kacang, telur, atau produk kedelai.','Usahakan pola makan teratur dan variasi kelompok pangan.']
     : ['Utamakan sayur, buah utuh, dan sumber protein pada setiap waktu makan.','Perhatikan ukuran porsi dan batasi minuman berpemanis.','Pilih metode memasak panggang, rebus, atau kukus lebih sering.'];
   if (goal === 'lose') items.push('Untuk tujuan penurunan berat badan, utamakan perubahan bertahap dan berkelanjutan.');
   if (goal === 'gain') items.push('Untuk tujuan peningkatan berat badan, tambahkan porsi secara bertahap dengan pangan padat gizi.');
-  if (condition !== 'none') items.push('Kondisi kesehatan khusus dipilih: rekomendasi umum ini bukan diet terapi. Konsultasikan penyesuaian dengan dokter atau ahli gizi.');
   return items;
 }
 function showError(message) { $('profileError').textContent = message; $('profileError').hidden = false; }
 function setMetric(id,value,unit) { $(id).innerHTML = `${value} <small>${unit}</small>`; }
 $('profileForm').addEventListener('submit',event=>{
   event.preventDefault(); $('profileError').hidden = true;
-  const p = {sex,age:number($('age').value),height:number($('height').value),weight:number($('weight').value),activity:number($('activity').value),condition:$('condition').value,goal:$('goal').value};
+  const p = {sex,age:number($('age').value),height:number($('height').value),weight:number($('weight').value),activity:number($('activity').value),goal:$('goal').value};
   if (!Number.isFinite(p.age)||p.age<18||p.age>100) return showError('Kalkulator ini ditujukan untuk orang dewasa usia 18–100 tahun.');
   if (!Number.isFinite(p.height)||p.height<120||p.height>230) return showError('Masukkan tinggi badan antara 120–230 cm.');
   if (!Number.isFinite(p.weight)||p.weight<25||p.weight>300) return showError('Masukkan berat badan antara 25–300 kg.');
-  if (['pregnant','breastfeeding'].includes(p.condition)) return showError('Perhitungan energi standar ini tidak berlaku untuk kehamilan atau menyusui.');
   const r = calculateProfile(p);
   renderMicros(p);
   setMetric('bmiValue',fmt(r.bmi,1),'kg/m²'); $('bmiCategory').textContent=r.category;
@@ -89,7 +87,7 @@ $('profileForm').addEventListener('submit',event=>{
   $('calorieValue').innerHTML=`${fmt(r.target)} <small>kkal / hari</small>`; $('calorieDescription').textContent='Disesuaikan dengan tujuan berat badan yang dipilih.'; $('calorieRingValue').textContent='100%';
   $('carbValue').textContent=`${fmt(r.carbs,1)} g`; $('proteinValue').textContent=`${fmt(r.protein,1)} g`; $('fatValue').textContent=`${fmt(r.fat,1)} g`;
   $('resultStatus').textContent='Hasil diperbarui';
-  $('recommendations').innerHTML = `<ul class="recommend-list">${recommendations(r.category,p.goal,p.condition).map(x=>`<li><span style="color:#22a45d;font-weight:800">✓</span>${x}</li>`).join('')}</ul>`;
+  $('recommendations').innerHTML = `<ul class="recommend-list">${recommendations(r.category,p.goal).map(x=>`<li><span style="color:#22a45d;font-weight:800">✓</span>${x}</li>`).join('')}</ul>`;
 });
 
 document.querySelectorAll('[data-sex]').forEach(button=>button.addEventListener('click',()=>{sex=button.dataset.sex;document.querySelectorAll('[data-sex]').forEach(b=>b.classList.toggle('selected',b===button));}));
