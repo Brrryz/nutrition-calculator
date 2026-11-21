@@ -14,16 +14,30 @@ const sexButtons=['male','female'].map(sex=>{const e=new Element();e.dataset.sex
 const pageButtons=['personal','food'].map(page=>{const e=new Element();e.dataset.page=page;return e;});
 const document={getElementById:id=>elements[id]||new Element(),querySelectorAll:selector=>selector==='[data-sex]'?sexButtons:selector==='[data-page]'?pageButtons:[]};
 const context={document,Intl,Number,Math,console}; vm.createContext(context);
+vm.runInContext(fs.readFileSync(require('node:path').join(__dirname,'..','foods.js'),'utf8'),context);
 vm.runInContext(fs.readFileSync(require('node:path').join(__dirname,'..','app.js'),'utf8'),context);
 
 elements.profileForm.handlers.submit({preventDefault(){}});
 assert.match(elements.bmiValue.innerHTML,/22,5/,'BMI should be calculated for 65 kg / 170 cm');
 assert.match(elements.bmrValue.innerHTML,/1\.6/,'BMR output should be populated');
+assert.match(elements.calorieValue.innerHTML,/2\.210/,'Maintain goal should equal TDEE');
 assert.match(elements.recommendations.innerHTML,/Pertahankan|Utamakan/,'Rule-based recommendations should render');
 
+elements.goal.value = 'lose';
+elements.profileForm.handlers.submit({preventDefault(){}});
+assert.match(elements.calorieValue.innerHTML,/1\.989/,'Lose goal should be TDEE - 10%');
+
+elements.goal.value = 'gain';
+elements.profileForm.handlers.submit({preventDefault(){}});
+assert.match(elements.calorieValue.innerHTML,/2\.431/,'Gain goal should be TDEE + 10%');
+
 elements.foodForm.handlers.submit({preventDefault(){}});
-assert.match(elements.foodOutput.innerHTML,/DATA DEMO/,'Food nutrition table should render');
-assert.match(elements.foodOutput.innerHTML,/195,0/,'150 g rice demo energy should scale from 130 kcal per 100 g');
+assert.match(elements.foodOutput.innerHTML,/TKPI 2020/,'Food nutrition table should render TKPI 2020 reference');
+assert.match(elements.foodOutput.innerHTML,/270,0/,'150 g rice (AP001) energy should scale from 180 kcal per 100 g');
+
+elements.foodSearch.value = 'tempe';
+elements.foodSearch.handlers.input();
+assert.match(elements.searchResults.innerHTML,/Tempe/,'Search should find Tempe from TKPI 2020 database');
 
 pageButtons[1].handlers.click();
 assert.equal(elements.foodPage.hidden,false,'Food page should become visible after navigation');
