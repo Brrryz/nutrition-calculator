@@ -1,1 +1,1 @@
-{"name":"pki-nutrition-calculator","version":"1.0.0","private":true,"description":"Static PKI Nutrition Calculator website, deployable directly to Vercel.","scripts":{"check":"node --check app.js","test":"node tests/smoke.cjs"}}
+{"name":"pki-nutrition-calculator","version":"1.0.0","private":true,"description":"Static PKI Nutrition Calculator website, deployable directly to Vercel.","scripts":{"check":"node --check foods.js app.js","test":"node tests/smoke.cjs"}}
